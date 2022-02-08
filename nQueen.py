@@ -16,7 +16,8 @@ class chess_board():
                 if ((i,j) in self.queens):
                     temp += 'q   '
                 else:
-                    temp += str(self.board[i][j]) + '   '
+                    #temp += str(self.board[i][j]) + '   '
+                    temp += '-   '
             print (temp)
 
     def order_domain_value(self,var):
@@ -52,9 +53,7 @@ class chess_board():
         elif var == 'q8':
             for i in range(8):
                 if self.board[i][7] == 0:
-                    arr.append((i,7)) 
-
-        print(arr)                                   
+                    arr.append((i,7))                                 
         return arr
 
     def move (self,position):#pos(x,y)
@@ -117,9 +116,9 @@ class chess_board():
                     self.board[lSTRow][i] -= 1
                 lSTRow +=1
 
-def selectUnassignedVar (b):
+def selectUnassignedVar (b,i):
         try:
-            var = b.variable.pop(0)
+            var = b.variable[i]
             return var  
         except:
             print('empty')  
@@ -127,31 +126,30 @@ def selectUnassignedVar (b):
                     
 
 
-def recursive_backtracking(b) :                 
+def recursive_backtracking(b,i) :                 
     #goal test
-    if len(b.queens)== 8:
-        return b.queens
-    var = selectUnassignedVar(b)    
+    if i == 8:
+        return True
+    var = selectUnassignedVar(b,i)    
     arr = b.order_domain_value(var)    
     for a in arr:
-        #IF
-        
         b.move(a)
-        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        b.show() 
-        Result= recursive_backtracking(b)
-        if Result==True:
+        print(b.queens)
+        i += 1
+        Result= recursive_backtracking(b,i)
+        if Result == True:
             return Result
+        i -= 1
         b.re_move(a)
-        print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        b.show()
+        print(b.queens)
     return False
 
         
 def main():
     bo = chess_board()
     #b.show()
-    recursive_backtracking(bo)
+    i = 0 
+    recursive_backtracking(bo, i)
     bo.show()
    
 if __name__ == '__main__':
