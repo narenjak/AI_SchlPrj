@@ -53,7 +53,9 @@ class chess_board():
         elif var == 'q8':
             for i in range(8):
                 if self.board[i][7] == 0:
-                    arr.append((i,7))                                 
+                    arr.append((i,7))    
+
+
         return arr
 
     def move (self,position):#pos(x,y)
@@ -117,42 +119,39 @@ class chess_board():
                 lSTRow +=1
 
 def selectUnassignedVar (b,i):
-        try:
-            var = b.variable[i]
-            return var  
-        except:
-            print('empty')  
+    try:
+        var = b.variable[i]
+        return var  
+    except:
+        print('empty')  
          
                     
 
 
 def recursive_backtracking(b,c) :                 
     #goal test
-    if c == 8:
+    if len(b.queens) == 8:
         return True
     var = selectUnassignedVar(b,c)    
     arr = b.order_domain_value(var)    
     for a in arr:
         b.move(a)
         ##################forward checking:
-        #if (c+1) != 8:       
-        #    forwVar = selectUnassignedVar(b, c+1)
-        #    #print(forwVar)
-        #    forwArr = b.order_domain_value(forwVar)
-        #    #print(forwArr)
-        #    if len(forwArr) == 0:
-        #        b.re_move(a)
-        #        continue            
-        ###################################    
-        print('a')
+        if (c+1) != 8:       
+            forwVar = selectUnassignedVar(b, c+1)
+            #print(forwVar)
+            forwArr = b.order_domain_value(forwVar)
+            #print(forwArr)
+            if len(forwArr) == 0:
+                b.re_move(a)
+                continue            
+        ###################################    )
         c += 1
         Result= recursive_backtracking(b,c)
         if Result == True:
             return Result
         c -= 1
         b.re_move(a)
-        print('a')
-
         #print(b.queens)
     return False
 
