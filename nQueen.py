@@ -126,22 +126,34 @@ def selectUnassignedVar (b,i):
                     
 
 
-def recursive_backtracking(b,i) :                 
+def recursive_backtracking(b,c) :                 
     #goal test
-    if i == 8:
+    if c == 8:
         return True
-    var = selectUnassignedVar(b,i)    
+    var = selectUnassignedVar(b,c)    
     arr = b.order_domain_value(var)    
     for a in arr:
         b.move(a)
-        print(b.queens)
-        i += 1
-        Result= recursive_backtracking(b,i)
+        ##################forward checking:
+        #if (c+1) != 8:       
+        #    forwVar = selectUnassignedVar(b, c+1)
+        #    #print(forwVar)
+        #    forwArr = b.order_domain_value(forwVar)
+        #    #print(forwArr)
+        #    if len(forwArr) == 0:
+        #        b.re_move(a)
+        #        continue            
+        ###################################    
+        print('a')
+        c += 1
+        Result= recursive_backtracking(b,c)
         if Result == True:
             return Result
-        i -= 1
+        c -= 1
         b.re_move(a)
-        print(b.queens)
+        print('a')
+
+        #print(b.queens)
     return False
 
         
