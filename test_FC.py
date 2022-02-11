@@ -6,7 +6,8 @@ class chess_board():
             self.board[i] = [0] * 8
         #an array for final place of queens:
         self.queens = []  #assignment
-        self.variable = ['q0','q1','q2','q3','q4','q5','q6','q7']
+        self.variable = ['q1','q2','q3','q4','q5','q6','q7','q8']
+
 
     def show(self):
         for i in range (8):
@@ -21,42 +22,43 @@ class chess_board():
 
     def order_domain_value(self,var):
         arr = []
-        if var == 'q0': 
+        if var == 'q1': 
             for i in range(8):
                 if self.board[i][0] == 0:
                     arr.append((i,0))
-        elif var == 'q1': 
+        elif var == 'q2': 
             for i in range(8):
                 if self.board[i][1] == 0:
                     arr.append((i,1))
-        elif var == 'q2': 
+        elif var == 'q3': 
             for i in range(8):
                 if self.board[i][2] == 0:
                     arr.append((i,2))
-        elif var == 'q3': 
+        elif var == 'q4': 
             for i in range(8):
                 if self.board[i][3] == 0:
                     arr.append((i,3))
-        elif var == 'q4': 
+        elif var == 'q5': 
             for i in range(8):
                 if self.board[i][4] == 0:
                     arr.append((i,4))
-        elif var == 'q5': 
+        elif var == 'q6': 
             for i in range(8):
                 if self.board[i][5] == 0:
                     arr.append((i,5))
-        elif var == 'q6': 
+        elif var == 'q7': 
             for i in range(8):
                 if self.board[i][6] == 0:
                     arr.append((i,6))
-        elif var == 'q7':
+        elif var == 'q8':
             for i in range(8):
                 if self.board[i][7] == 0:
                     arr.append((i,7))    
+
+
         return arr
 
     def move (self,position):#pos(x,y)
-        counter_for_degree = 0
         self.queens.append(position)
         #row,col,/dig,\dig of a move should be +1
         row, col = position
@@ -69,32 +71,22 @@ class chess_board():
         for i in range(8):
             #x cns , y var
             self.board[row][i] += 1
-            if (row,i) != position:
-                counter_for_degree += 1
         #col
         for i in range(8):
             #x var , y cns
             self.board[i][col] += 1
-            if (i,col) != position:
-                counter_for_degree += 1
         #/ dig
         for i in range(8):
             if rSTRow >= 0:
                 if rSTRow < 8:
                     self.board[rSTRow][i] += 1
-                    if (rSTRow,i) != position:
-                        counter_for_degree += 1
                 rSTRow -= 1
         #\ dig
         for i in range(8):
             if lSTRow < 8:
                 if lSTRow >= 0:
                     self.board[lSTRow][i] += 1
-                    if (lSTRow,i) != position:      
-                        counter_for_degree += 1
                 lSTRow +=1
-        print(counter_for_degree)
-        return counter_for_degree        
 
     def re_move (self,position):#pos(x,y)
         self.queens.remove(position)
@@ -126,122 +118,51 @@ class chess_board():
                     self.board[lSTRow][i] -= 1
                 lSTRow +=1
 
-def degree(board):
-    print('degree called')
+def selectUnassignedVar (b,i):
 
-    valid_Col = []
-    for var in board.variable:
-        if var == 'q0': 
-            valid_Col.append(0)  
-        elif var == 'q1': 
-            valid_Col.append(1)  
-        elif var == 'q2': 
-            valid_Col.append(2)  
-        elif var == 'q3': 
-            valid_Col.append(3)  
-        elif var == 'q4':
-            valid_Col.append(4)  
-        elif var == 'q5': 
-            valid_Col.append(5)  
-        elif var == 'q6': 
-            valid_Col.append(6)  
-        elif var == 'q7':        
-            valid_Col.append(7)  
+    try:
+        var = b.variable[i]
+        return var  
+    except:
+        print('empty')  
+         
+                    
 
-    x = 0 #if x is max than return a position of a queen
-    pos = (0,0)
-    var = ''
-    for i in range(8): #row
-        for j in valid_Col: #col
-            newMax = board.move((i,j))
-            board.re_move((i,j))
-            if x < newMax:
-                x = newMax
-                pos = (i,j)
-    r , c = pos
-    if c == 0:
-        var = 'q0'
-    elif c == 1:
-        var = 'q1'
-    elif c == 2:
-        var = 'q2' 
-    elif c == 3:
-        var = 'q3' 
-    elif c == 4:
-        var = 'q4' 
-    elif c == 5:
-        var = 'q5' 
-    elif c == 6:
-        var = 'q6'
-    elif c == 7:
-        var = 'q7'  
-    print('degree selcted '+var)
-    return var
 
-#min remaing value //moteghayery ba kamtarin maghadir mojaz
-def mrv(board):
-    print ('mrv called')
-    flag = False
-    reVar = ''
-    minRV = 8
-    for var in board.variable:
-        x = len(board.order_domain_value(var))
-        if x < minRV:
-            minRV = x
-            reVar = var
-            flag =True
-    if flag:
-        print ('mrv selected  '+ var)
-
-    if flag == False:
-        #mrv is not helpful, we should using degree :
-        print ('mrv isnt helpfull!!')
-        reVar = degree(board)
-    return reVar    
- 
-
-def select_unassigned_var (b):
-    print ('select proc ')
-    var = mrv(b)
-    return var
-
-def recursive_backtracking(b) :                 
-    #####GOAL test
-    if len(b.queens) >= 8:
-        return b.queens
-    #####SELECT:
-    var = select_unassigned_var(b) 
-    print (var)
-    #####ASSIGNMENT:
+def recursive_backtracking(b,c) :                 
+    #goal test
+    if len(b.queens) == 8:
+        return True
+    var = selectUnassignedVar(b,c)    
     arr = b.order_domain_value(var)    
     for a in arr:
         b.move(a)
-        print('this queen placed: '+var)
-        b.variable.remove(var) #var should be pop if asiignment completed 
         ##################forward checking:
-        if len(b.variable) != 1: 
-            print('FC:')
-            forwVar = select_unassigned_var(b) #with next var
+        if (c) != 7:       
+            forwVar = selectUnassignedVar(b, c+1)
             forwArr = b.order_domain_value(forwVar)
+            #print(forwArr)
             if len(forwArr) == 0:
                 b.re_move(a)
-                print('FC done and this var is not valid ' + var)
-                continue
-            print ('FC done')            
-        ###################################  
-        Result= recursive_backtracking(b)
+                continue            
+        ###################################    )
+        c += 1
+        
+        Result= recursive_backtracking(b,c)
         if Result == True:
             return Result
-        b.variable.append(var) #var should be push if backtrack happend
+        c -= 1
         b.re_move(a)
-        print('this queen unplaced: '+var)
+        #print(b.queens)
     return False
-      
+
+        
 def main():
     bo = chess_board()
     #b.show()
-    recursive_backtracking(bo)
+    i = 0 
+    recursive_backtracking(bo, i)
     bo.show()
-
+   
 if __name__ == '__main__':
     main()
