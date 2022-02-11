@@ -93,7 +93,6 @@ class chess_board():
                     if (lSTRow,i) != position:      
                         counter_for_degree += 1
                 lSTRow +=1
-        print(counter_for_degree)
         return counter_for_degree        
 
     def re_move (self,position):#pos(x,y)
@@ -127,8 +126,6 @@ class chess_board():
                 lSTRow +=1
 
 def degree(board):
-    print('degree called')
-
     valid_Col = []
     for var in board.variable:
         if var == 'q0': 
@@ -175,12 +172,10 @@ def degree(board):
         var = 'q6'
     elif c == 7:
         var = 'q7'  
-    print('degree selcted '+var)
     return var
 
 #min remaing value //moteghayery ba kamtarin maghadir mojaz
 def mrv(board):
-    print ('mrv called')
     flag = False
     reVar = ''
     minRV = 8
@@ -191,27 +186,24 @@ def mrv(board):
             reVar = var
             flag =True
     if flag:
-        print ('mrv selected  '+ var)
+        return var
 
-    if flag == False:
+    else:
         #mrv is not helpful, we should using degree :
-        print ('mrv isnt helpfull!!')
         reVar = degree(board)
-    return reVar    
+        return reVar    
  
 
 def select_unassigned_var (b):
-    print ('select proc ')
     var = mrv(b)
     return var
 
 def recursive_backtracking(b) :                 
     #####GOAL test
-    if len(b.queens) >= 8:
-        return b.queens
+    if len(b.queens) == 8:
+        return True
     #####SELECT:
     var = select_unassigned_var(b) 
-    print (var)
     #####ASSIGNMENT:
     arr = b.order_domain_value(var)    
     for a in arr:
@@ -219,7 +211,7 @@ def recursive_backtracking(b) :
         print('this queen placed: '+var)
         b.variable.remove(var) #var should be pop if asiignment completed 
         ##################forward checking:
-        if len(b.variable) != 1: 
+        if len(b.variable) > 1: 
             print('FC:')
             forwVar = select_unassigned_var(b) #with next var
             forwArr = b.order_domain_value(forwVar)
