@@ -192,7 +192,44 @@ def mrv(board):
         #mrv is not helpful, we should using degree :
         reVar = degree(board)
         return reVar    
- 
+
+def lcv(board,cur_queen): #lcv(b,var)
+    arr = board.variable
+    arr.remove(cur_queen) #list of unplaced queens
+    valid_Col = []
+    for var in arr:
+        if var == 'q0': 
+            valid_Col.append(0)  
+        elif var == 'q1': 
+            valid_Col.append(1)  
+        elif var == 'q2': 
+            valid_Col.append(2)  
+        elif var == 'q3': 
+            valid_Col.append(3)  
+        elif var == 'q4':
+            valid_Col.append(4)  
+        elif var == 'q5': 
+            valid_Col.append(5)  
+        elif var == 'q6': 
+            valid_Col.append(6)  
+        elif var == 'q7':        
+            valid_Col.append(7)
+    global_min = 8  
+    posOFglobal_min = (-1,-1)      
+    domain_cur_q = board.order_domain_value(cur_queen)
+    for position in domain_cur_q:
+        board.move(position)
+        local_min = 0
+        for j in  valid_Col:
+            for i in range(8):
+                if board[i][j] == 1:
+                    local_min += 1
+        if local_min < global_min:
+            global_min = local_min
+            posOFglobal_min = position
+        board.re_move(position)
+    return posOFglobal_min
+    
 
 def select_unassigned_var (b):
     var = mrv(b)
