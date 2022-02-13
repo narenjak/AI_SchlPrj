@@ -1,6 +1,3 @@
-from inspect import BoundArguments
-
-
 class chess_board():
     def __init__(self):
         #2D array for chess board:
