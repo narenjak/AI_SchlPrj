@@ -1,3 +1,6 @@
+from inspect import BoundArguments
+
+
 class chess_board():
     def __init__(self):
         #2D array for chess board:
@@ -194,10 +197,9 @@ def mrv(board):
         return reVar    
 
 def lcv(board,cur_queen): #lcv(b,var)
-    arr = board.variable
-    arr.remove(cur_queen) #list of unplaced queens
+    board.variable.remove(cur_queen)
     valid_Col = []
-    for var in arr:
+    for var in board.variable:
         if var == 'q0': 
             valid_Col.append(0)  
         elif var == 'q1': 
@@ -214,7 +216,7 @@ def lcv(board,cur_queen): #lcv(b,var)
             valid_Col.append(6)  
         elif var == 'q7':        
             valid_Col.append(7)
-    global_min = 8  
+    global_min = 64  
     posOFglobal_min = (-1,-1)      
     domain_cur_q = board.order_domain_value(cur_queen)
     for position in domain_cur_q:
@@ -222,12 +224,13 @@ def lcv(board,cur_queen): #lcv(b,var)
         local_min = 0
         for j in  valid_Col:
             for i in range(8):
-                if board[i][j] == 1:
+                if board.board[i][j] == 1:
                     local_min += 1
         if local_min < global_min:
             global_min = local_min
             posOFglobal_min = position
         board.re_move(position)
+    board.variable.append(cur_queen)
     return posOFglobal_min
     
 
