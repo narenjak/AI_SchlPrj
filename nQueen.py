@@ -1,5 +1,5 @@
 class chess_board():
-    def __init__(self):
+    def __init__(self):#constructor
         #2D array for chess board:
         self.board = [0] * 8 #[[0],[0],...,[0]] CSP
         for i in range(8):
@@ -8,7 +8,7 @@ class chess_board():
         self.queens = []  #assignment
         self.variable = ['q0','q1','q2','q3','q4','q5','q6','q7']
 
-    def show(self):
+    def show(self): #show chess board 
         for i in range (8):
             temp = ''
             for j in range (8):
@@ -19,7 +19,7 @@ class chess_board():
                     temp += '-   '
             print (temp)
 
-    def order_domain_value(self,var):
+    def order_domain_value(self,var): #//mohasebe majmoee az khane hay motabar baray har queen
         arr = []
         if var == 'q0': 
             for i in range(8):
@@ -55,7 +55,7 @@ class chess_board():
                     arr.append((i,7))    
         return arr
 
-    def move (self,position):#pos(x,y)
+    def move (self,position):#input a pos(x,y) and apply constrints
         counter_for_degree = 0
         self.queens.append(position)
         #row,col,/dig,\dig of a move should be +1
@@ -125,6 +125,7 @@ class chess_board():
                     self.board[lSTRow][i] -= 1
                 lSTRow +=1
 
+#degree // makzimom az khane hay mahdod shode
 def degree(board):
     valid_Col = []
     for var in board.variable:
@@ -193,6 +194,46 @@ def mrv(board):
         reVar = degree(board)
         return reVar    
 
+def select_unassigned_var (b):
+    var = mrv(b)
+    return var
+
+def recursive_backtracking(b) :                 
+    #####GOAL test
+    if len(b.queens) == 8:
+        return True
+    #####SELECT:
+    var = select_unassigned_var(b) 
+    #####ASSIGNMENT:
+    arr = b.order_domain_value(var)    
+    for a in arr:
+        b.move(a)
+        #print('this queen placed: '+var)
+        b.variable.remove(var) #var should be pop if asiignment completed 
+        ##################forward checking:
+        if len(b.variable) > 1: 
+            #print('FC:')
+            forwVar = select_unassigned_var(b) #with next var
+            forwArr = b.order_domain_value(forwVar)
+            if len(forwArr) == 0:
+                b.re_move(a)
+                print('FC done and this var is not valid ' + var)
+                continue
+            #print ('FC done')            
+        ###################################  
+        Result= recursive_backtracking(b)
+        if Result == True:
+            return Result
+        b.variable.append(var) #var should be push if backtrack happend
+        b.re_move(a)
+        #print('this queen unplaced: '+var)
+    return False
+
+
+#//sa`i shod peyade sazi va estefade shavad likan natavanestim motasefane
+
+#least constrainting value //meghdari ke kamtarin mahdodit ro ijad kond
+#dar 2 hakghe for roy board harekat kardim va 0->1 ha va khneh hay != 0  ra shomordim
 def lcv(board,cur_queen): #lcv(b,var)
     board.variable.remove(cur_queen)
     valid_Col = []
@@ -229,42 +270,55 @@ def lcv(board,cur_queen): #lcv(b,var)
         board.re_move(position)
     board.variable.append(cur_queen)
     return posOFglobal_min
+def remove_inconsistent_value(b,var1,var2):
+    removed = False
+    domain_var1 = b.order_domain_value(var1)
+    #for each x in Domain[X i ] do
+    for x in domain_var1:
+        b.move(x) 
+        domain_var2 = b.order_domain_value(var2)
+        if len(domain_var2) == 0: #if no value y in Domain[X j ] allows (x,y) to satisfy constraint(X i , X j )
+            #then delete x from Domain[X i ]; removed <- true:
+            r, c =x
+            b.board[r][c] += 1
+            domain_var1.remove(x)
+            removed = True
+        b.re_move(x)
+    return removed
+def AC (b):
+    #select:        
+    var = select_unassigned_var (b)
+    b.variable.remove(var)
+    #arc start:
+    #local variables: queue, a queue of arcs, initially all the arcs in csp
+    queue_arc = []
+    for x in b.variable:
+        for y in b.variable:
+            queue_arc.append((x,y))
+    for i in b.variable:
+        queue_arc.remove((i,i))
     
+    #assignment
+    arr = b.order_domain_value(var)
+    for pos in arr:
+        #//hazf maghadir nasazegar
+        b.move(pos)
+        for i in range (8):
+            for j in range(8):
+                b.board[i][j] = 0
+        #completed graph has (n*n-1)/2 edge and we have 2-way edge so we most *2 -->  there is n*(n-1)=8*7 vaiable
+        while len(queue_arc) != 0:
+            var1 , var2= queue_arc.pop(0)
+            print(str(var1)+ ','+str(var2))
+            if remove_inconsistent_value(b,var1,var2):
+                b.variable.remove(var1)
+                for var in b.variable:
+                    queue_arc.append((var,var1))
+                b.variable.append(var1) 
+                
+        b.show()   
+        b.re_move(pos)
 
-def select_unassigned_var (b):
-    var = mrv(b)
-    return var
-
-def recursive_backtracking(b) :                 
-    #####GOAL test
-    if len(b.queens) == 8:
-        return True
-    #####SELECT:
-    var = select_unassigned_var(b) 
-    #####ASSIGNMENT:
-    arr = b.order_domain_value(var)    
-    for a in arr:
-        b.move(a)
-        print('this queen placed: '+var)
-        b.variable.remove(var) #var should be pop if asiignment completed 
-        ##################forward checking:
-        if len(b.variable) > 1: 
-            print('FC:')
-            forwVar = select_unassigned_var(b) #with next var
-            forwArr = b.order_domain_value(forwVar)
-            if len(forwArr) == 0:
-                b.re_move(a)
-                print('FC done and this var is not valid ' + var)
-                continue
-            print ('FC done')            
-        ###################################  
-        Result= recursive_backtracking(b)
-        if Result == True:
-            return Result
-        b.variable.append(var) #var should be push if backtrack happend
-        b.re_move(a)
-        print('this queen unplaced: '+var)
-    return False
       
 def main():
     bo = chess_board()
